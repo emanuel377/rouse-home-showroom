@@ -402,10 +402,12 @@
       top: var(--overlay-top, 43%);
       width: var(--overlay-width, 72%);
       height: var(--overlay-height, 28%);
-      background: var(--finish-color, rgba(154, 116, 83, .48));
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.16), rgba(0,0,0,.08)),
+        var(--finish-color, rgba(154, 116, 83, .72));
       clip-path: var(--overlay-shape, polygon(0 18%, 100% 0, 95% 100%, 8% 92%));
-      mix-blend-mode: color;
-      opacity: var(--overlay-opacity, .7);
+      mix-blend-mode: multiply;
+      opacity: var(--overlay-opacity, .86);
       pointer-events: none;
       transition: background .25s ease, opacity .25s ease, left .25s ease, top .25s ease, width .25s ease, height .25s ease;
     }
@@ -582,6 +584,32 @@
       overflow: hidden;
       background:
         linear-gradient(180deg, #f7f5ef, #e5ddcf);
+    }
+
+    .finish-badge {
+      position: absolute;
+      z-index: 2;
+      top: 18px;
+      left: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(31,33,29,.16);
+      border-radius: 4px;
+      background: rgba(255,253,248,.86);
+      color: var(--ink);
+      box-shadow: 0 10px 30px rgba(31,33,29,.12);
+      backdrop-filter: blur(8px);
+      font-size: 13px;
+    }
+
+    .finish-badge i {
+      width: 24px;
+      height: 24px;
+      border-radius: 99px;
+      background: var(--badge-color, #b57942);
+      border: 1px solid rgba(31,33,29,.18);
     }
 
     #furniture3d {
@@ -864,6 +892,7 @@
           </div>
         </div>
         <div class="viewer3d-stage">
+          <span class="finish-badge"><i id="finishBadgeColor"></i><b id="finishBadgeText">Madera natural</b></span>
           <canvas id="furniture3d" aria-label="Modelo 3D basico del mueble seleccionado"></canvas>
         </div>
       </div>
@@ -902,16 +931,16 @@
 
     const finishPreview = {
       "Madera natural": {
-        color: "rgba(154, 116, 83, .55)"
+        color: "rgba(181, 124, 72, .9)"
       },
       "Nogal oscuro": {
-        color: "rgba(56, 36, 25, .75)"
+        color: "rgba(47, 25, 13, .95)"
       },
       "Blanco calido": {
-        color: "rgba(239, 232, 218, .72)"
+        color: "rgba(245, 236, 216, .92)"
       },
       "Verde acento": {
-        color: "rgba(88, 105, 78, .72)"
+        color: "rgba(74, 112, 68, .92)"
       }
     };
 
@@ -925,7 +954,7 @@
           width: "80%",
           height: "32%",
           shape: "polygon(7% 18%, 92% 0, 100% 38%, 82% 100%, 14% 94%, 0 42%)",
-          opacity: ".62"
+          opacity: ".88"
         }
       },
       "Consola o mueble de TV": {
@@ -937,7 +966,7 @@
           width: "70%",
           height: "20%",
           shape: "polygon(0 8%, 100% 0, 96% 100%, 3% 96%)",
-          opacity: ".7"
+          opacity: ".9"
         }
       },
       "Vitrina o bar": {
@@ -949,7 +978,7 @@
           width: "78%",
           height: "48%",
           shape: "polygon(3% 8%, 97% 0, 100% 92%, 8% 100%, 0 22%)",
-          opacity: ".58"
+          opacity: ".84"
         }
       },
       "Gavetero": {
@@ -961,7 +990,7 @@
           width: "70%",
           height: "35%",
           shape: "polygon(8% 0, 100% 8%, 92% 100%, 0 92%)",
-          opacity: ".66"
+          opacity: ".9"
         }
       },
       "Espejo": {
@@ -973,7 +1002,7 @@
           width: "28%",
           height: "66%",
           shape: "ellipse(44% 50% at 50% 50%)",
-          opacity: ".5"
+          opacity: ".78"
         }
       },
       "Mueble especial a medida": {
@@ -985,7 +1014,7 @@
           width: "44%",
           height: "68%",
           shape: "polygon(14% 20%, 50% 0, 86% 20%, 100% 100%, 0 100%)",
-          opacity: ".58"
+          opacity: ".84"
         }
       }
     };
@@ -1039,14 +1068,16 @@
     const canvas = document.querySelector("#furniture3d");
     const modelPiece = document.querySelector("#modelPiece");
     const modelFinish = document.querySelector("#modelFinish");
+    const finishBadgeColor = document.querySelector("#finishBadgeColor");
+    const finishBadgeText = document.querySelector("#finishBadgeText");
     const form3d = document.querySelector("#quoteForm");
     const piece3d = document.querySelector("#piece");
 
     const finishColors = {
-      "Madera natural": 0x9a7453,
-      "Nogal oscuro": 0x3a251a,
-      "Blanco calido": 0xece4d7,
-      "Verde acento": 0x58694e
+      "Madera natural": { value: 0xb57942, css: "#b57942" },
+      "Nogal oscuro": { value: 0x24150d, css: "#24150d" },
+      "Blanco calido": { value: 0xf2e7d1, css: "#f2e7d1" },
+      "Verde acento": { value: 0x3f6b3f, css: "#3f6b3f" }
     };
 
     const scene = new THREE.Scene();
@@ -1079,10 +1110,11 @@
     floor.receiveShadow = true;
     scene.add(floor);
 
-    const makeMat = (color, roughness = .62) => new THREE.MeshStandardMaterial({
+    const makeMat = (color, roughness = .48) => new THREE.MeshStandardMaterial({
       color,
       roughness,
-      metalness: .04
+      metalness: .02,
+      emissive: new THREE.Color(color).multiplyScalar(.035)
     });
 
     const darkMetal = makeMat(0x1f211d, .44);
@@ -1202,12 +1234,14 @@
       root.clear();
       const finish = form3d.querySelector("input[name='finish']:checked").value;
       const color = finishColors[finish] || finishColors["Madera natural"];
-      const mat = makeMat(color);
+      const mat = makeMat(color.value);
       const builder = builders[piece3d.value] || buildDining;
       const model = builder(mat);
       root.add(model);
       modelPiece.textContent = piece3d.value;
       modelFinish.textContent = finish;
+      finishBadgeColor.style.background = color.css;
+      finishBadgeText.textContent = finish;
     };
 
     const resize3d = () => {
