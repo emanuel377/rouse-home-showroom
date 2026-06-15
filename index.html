@@ -387,7 +387,23 @@
     }
 
     .preview-image {
+      position: relative;
       aspect-ratio: 4 / 5;
+    }
+
+    .preview-image::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--finish-tint, rgba(154, 116, 83, .12));
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      transition: background .25s ease, opacity .25s ease;
+    }
+
+    .preview-image img {
+      transition: filter .25s ease, transform .25s ease;
+      filter: var(--finish-filter, saturate(1.02) contrast(1.02));
     }
 
     .preview-caption {
@@ -696,7 +712,7 @@
     <section class="section alt" id="adaptar">
       <div class="wrap customizer">
         <aside class="preview">
-          <div class="preview-image"><img src="assets/comedor.webp" alt="Comedor personalizado" id="previewImage"></div>
+          <div class="preview-image" id="previewFrame"><img src="assets/comedor.webp" alt="Comedor personalizado" id="previewImage"></div>
           <div class="preview-caption">
             <strong id="previewTitle">Solicitud personalizada</strong>
             <p id="previewText">Elegir opciones ayuda a enviar una consulta mas completa por WhatsApp.</p>
@@ -780,9 +796,29 @@
     const widthOut = document.querySelector("#widthOut");
     const summary = document.querySelector("#summary");
     const whatsappBtn = document.querySelector("#whatsappBtn");
+    const previewFrame = document.querySelector("#previewFrame");
     const previewImage = document.querySelector("#previewImage");
     const previewTitle = document.querySelector("#previewTitle");
     const previewText = document.querySelector("#previewText");
+
+    const finishPreview = {
+      "Madera natural": {
+        tint: "rgba(154, 116, 83, .16)",
+        filter: "saturate(1.06) contrast(1.03) brightness(1)"
+      },
+      "Nogal oscuro": {
+        tint: "rgba(59, 38, 27, .34)",
+        filter: "saturate(.9) contrast(1.12) brightness(.82)"
+      },
+      "Blanco calido": {
+        tint: "rgba(244, 236, 220, .42)",
+        filter: "saturate(.72) contrast(.95) brightness(1.14)"
+      },
+      "Verde acento": {
+        tint: "rgba(88, 105, 78, .36)",
+        filter: "saturate(.92) contrast(1.04) brightness(.94)"
+      }
+    };
 
     const piecePreview = {
       "Comedor": {
@@ -815,12 +851,15 @@
       const finish = form.querySelector("input[name='finish']:checked").value;
       const value = `${width.value} cm`;
       const preview = piecePreview[piece.value] || piecePreview["Comedor"];
+      const finishStyle = finishPreview[finish] || finishPreview["Madera natural"];
       widthOut.textContent = value;
       previewImage.src = preview.src;
       previewImage.alt = preview.alt;
+      previewFrame.style.setProperty("--finish-tint", finishStyle.tint);
+      previewFrame.style.setProperty("--finish-filter", finishStyle.filter);
       summary.innerHTML = `<strong>Resumen:</strong> ${piece.value} en ${finish.toLowerCase()}, medida aproximada de ${value}.`;
       previewTitle.textContent = piece.value;
-      previewText.textContent = `Solicitud inicial: ${finish}, ${value}. La cotizacion final depende de materiales, detalles y fabricacion.`;
+      previewText.textContent = `Vista referencial en ${finish.toLowerCase()}, ${value}. La cotizacion final depende de materiales, detalles y fabricacion.`;
 
       const notes = document.querySelector("#space").value.trim();
       const message = [
