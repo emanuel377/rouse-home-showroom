@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rouse Home | Showroom digital</title>
+  <meta name="description" content="Showroom digital para muebles y decoracion a medida en Costa Rica.">
+  <style>
+    :root {
+      --paper: #f7f5ef;
+      --warm: #ece5d8;
+      --ink: #1f211d;
+      --muted: #6f6b61;
+      --line: #ded6c8;
+      --wood: #7d5c42;
+      --sage: #6f7f66;
+      --olive: #485342;
+      --white: #fffdf8;
+      --shadow: 0 18px 48px rgba(31, 33, 29, .12);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      line-height: 1.5;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    .topbar {
+      position: fixed;
+      z-index: 20;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 18px clamp(18px, 4vw, 54px);
+      color: var(--white);
+      background: linear-gradient(rgba(0,0,0,.42), rgba(0,0,0,0));
+    }
+
+    .brand {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 22px;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .nav {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      color: rgba(255,255,255,.88);
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    .nav a {
+      border-bottom: 1px solid transparent;
+      padding-bottom: 4px;
+    }
+
+    .nav a:hover {
+      border-color: currentColor;
+    }
+
+    .hero {
+      min-height: 92vh;
+      position: relative;
+      display: grid;
+      align-items: end;
+      isolation: isolate;
+      color: var(--white);
+      background: #1d211d;
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+    }
+
+    .hero::before {
+      background: url("assets/hero.webp") center/cover;
+    }
+
+    .hero::after {
+      background:
+        linear-gradient(90deg, rgba(0,0,0,.68), rgba(0,0,0,.22) 58%, rgba(0,0,0,.04)),
+        linear-gradient(0deg, rgba(0,0,0,.54), rgba(0,0,0,.08) 48%, rgba(0,0,0,.32));
+    }
+
+    .hero-inner {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 150px 0 56px;
+      display: grid;
+      grid-template-columns: minmax(0, 650px) minmax(220px, 330px);
+      gap: clamp(28px, 7vw, 110px);
+      align-items: end;
+    }
+
+    .eyebrow {
+      margin: 0 0 16px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      color: rgba(255,255,255,.76);
+    }
+
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 22px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(48px, 8vw, 96px);
+      line-height: .94;
+      font-weight: 400;
+      max-width: 760px;
+    }
+
+    .lead {
+      max-width: 580px;
+      margin-bottom: 30px;
+      font-size: clamp(17px, 2vw, 22px);
+      color: rgba(255,255,255,.86);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 12px 18px;
+      border: 1px solid var(--ink);
+      border-radius: 4px;
+      background: var(--ink);
+      color: var(--white);
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease, border-color .2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background: #30342f;
+    }
+
+    .btn.light {
+      border-color: rgba(255,255,255,.74);
+      background: rgba(255,255,255,.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn.light:hover {
+      background: rgba(255,255,255,.2);
+    }
+
+    .btn.ghost {
+      color: var(--ink);
+      background: transparent;
+    }
+
+    .btn.ghost:hover {
+      background: var(--warm);
+    }
+
+    .hero-note {
+      border-left: 1px solid rgba(255,255,255,.34);
+      padding-left: 20px;
+      color: rgba(255,255,255,.78);
+      font-size: 14px;
+    }
+
+    .hero-note strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--white);
+      font-weight: 500;
+    }
+
+    .section {
+      padding: clamp(58px, 9vw, 112px) clamp(18px, 4vw, 54px);
+    }
+
+    .section.alt {
+      background: var(--white);
+    }
+
+    .wrap {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(240px, 420px);
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      margin-bottom: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1;
+      font-weight: 400;
+    }
+
+    .section-copy {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .mosaic {
+      display: grid;
+      grid-template-columns: 1.1fr .8fr .9fr;
+      grid-auto-rows: minmax(190px, 25vw);
+      gap: 14px;
+    }
+
+    .tile {
+      position: relative;
+      min-height: 240px;
+      overflow: hidden;
+      background: #ddd4c5;
+    }
+
+    .tile.large {
+      grid-row: span 2;
+    }
+
+    .tile::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(0,0,0,.42), rgba(0,0,0,0) 58%);
+    }
+
+    .tile span {
+      position: absolute;
+      z-index: 1;
+      left: 18px;
+      right: 18px;
+      bottom: 16px;
+      color: white;
+      font-size: 18px;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .quiet-band {
+      background: var(--olive);
+      color: var(--white);
+    }
+
+    .quiet-band .wrap {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: clamp(30px, 7vw, 86px);
+      align-items: center;
+    }
+
+    .portrait {
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .story p {
+      color: rgba(255,255,255,.78);
+      font-size: 18px;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,.22);
+      margin-top: 28px;
+    }
+
+    .step {
+      min-height: 150px;
+      padding: 22px;
+      background: var(--olive);
+    }
+
+    .step b {
+      display: block;
+      margin-bottom: 10px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      font-weight: 400;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .product {
+      background: var(--white);
+      border: 1px solid var(--line);
+    }
+
+    .product-image {
+      aspect-ratio: 4 / 4.3;
+      background: var(--warm);
+    }
+
+    .product-body {
+      padding: 18px;
+    }
+
+    .product h3 {
+      margin-bottom: 8px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      font-weight: 400;
+    }
+
+    .product p {
+      min-height: 48px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .tagline {
+      display: inline-flex;
+      margin-bottom: 12px;
+      color: var(--sage);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .customizer {
+      display: grid;
+      grid-template-columns: minmax(280px, .9fr) minmax(0, 1.1fr);
+      gap: clamp(24px, 5vw, 58px);
+      align-items: start;
+    }
+
+    .preview {
+      position: sticky;
+      top: 90px;
+      overflow: hidden;
+      background: var(--warm);
+      box-shadow: var(--shadow);
+    }
+
+    .preview-image {
+      aspect-ratio: 4 / 5;
+    }
+
+    .preview-caption {
+      padding: 20px;
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .preview-caption p {
+      margin-bottom: 0;
+      color: rgba(255,255,255,.72);
+      font-size: 14px;
+    }
+
+    .form-panel {
+      padding: clamp(22px, 4vw, 38px);
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    select, input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: #fff;
+      color: var(--ink);
+      padding: 13px 12px;
+      outline: none;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      border-color: var(--sage);
+      box-shadow: 0 0 0 3px rgba(111,127,102,.16);
+    }
+
+    textarea {
+      min-height: 116px;
+      resize: vertical;
+    }
+
+    .swatches {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .swatch {
+      position: relative;
+      display: grid;
+      gap: 8px;
+      min-height: 76px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .swatch input {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .swatch i {
+      display: block;
+      height: 22px;
+      border-radius: 99px;
+      border: 1px solid rgba(0,0,0,.08);
+    }
+
+    .swatch span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .swatch:has(input:checked) {
+      border-color: var(--ink);
+      box-shadow: 0 0 0 2px rgba(31,33,29,.08);
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: 1fr 80px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .summary {
+      margin: 24px 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--muted);
+    }
+
+    .summary strong {
+      color: var(--ink);
+    }
+
+    .quote-strip {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 26px;
+      align-items: center;
+      padding: clamp(28px, 5vw, 46px);
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .quote-strip p {
+      margin: 0;
+      color: rgba(255,255,255,.74);
+    }
+
+    .footer {
+      padding: 32px clamp(18px, 4vw, 54px);
+      background: #151713;
+      color: rgba(255,255,255,.68);
+    }
+
+    .footer .wrap {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      .nav {
+        display: none;
+      }
+
+      .hero-inner,
+      .section-head,
+      .quiet-band .wrap,
+      .customizer,
+      .quote-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-note {
+        max-width: 460px;
+      }
+
+      .mosaic,
+      .products,
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      .mosaic {
+        grid-auto-rows: auto;
+      }
+
+      .tile,
+      .tile.large {
+        grid-row: auto;
+        aspect-ratio: 4 / 3;
+      }
+
+      .preview {
+        position: static;
+      }
+
+      .swatches {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .topbar {
+        padding: 15px 16px;
+      }
+
+      .hero-inner {
+        width: min(100% - 28px, 1180px);
+        padding-bottom: 34px;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .section {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar" aria-label="Navegacion principal">
+    <a class="brand" href="#inicio">Rouse Home</a>
+    <nav class="nav">
+      <a href="#ambientes">Ambientes</a>
+      <a href="#piezas">Piezas</a>
+      <a href="#adaptar">Adaptar diseño</a>
+      <a href="#contacto">Cotizar</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero-inner">
+        <div>
+          <p class="eyebrow">Showroom digital | Costa Rica</p>
+          <h1>Muebles a medida para casas con identidad.</h1>
+          <p class="lead">Inspiracion internacional, fabricacion local y piezas personalizadas segun medidas, acabados y estilo de cada espacio.</p>
+          <div class="actions">
+            <a class="btn" href="#adaptar">Adaptar un diseño</a>
+            <a class="btn light" href="#ambientes">Ver ambientes</a>
+          </div>
+        </div>
+        <aside class="hero-note">
+          <strong>Sin precios fijos. Sin carrito.</strong>
+          Cada pieza se cotiza segun medidas, materiales, acabados y disponibilidad de fabricacion.
+        </aside>
+      </div>
+    </section>
+
+    <section class="section alt" id="ambientes">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Un showroom para inspirar, no para vender barato.</h2>
+          <p class="section-copy">Explora ambientes, acabados y piezas que pueden adaptarse al estilo de cada casa.</p>
+        </div>
+        <div class="mosaic">
+          <a class="tile large" href="#adaptar"><img src="assets/comedor.webp" alt="Comedor de madera con sillas claras"><span>Comedores a medida</span></a>
+          <a class="tile" href="#adaptar"><img src="assets/vitrina.webp" alt="Vitrina de madera con accesorios decorativos"><span>Vitrinas y bares</span></a>
+          <a class="tile" href="#adaptar"><img src="assets/arco.webp" alt="Mueble alto en arco con puertas de vidrio"><span>Piezas especiales</span></a>
+          <a class="tile" href="#adaptar"><img src="assets/tv.webp" alt="Mueble de television en madera"><span>Muebles de TV</span></a>
+          <a class="tile" href="#adaptar"><img src="assets/espejo.webp" alt="Espejo de cuerpo completo con marco de madera"><span>Espejos y acentos</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section quiet-band">
+      <div class="wrap">
+        <div class="portrait">
+          <img src="assets/ambiente.webp" alt="Comedor elegante en tonos neutros">
+        </div>
+        <div class="story">
+          <p class="eyebrow">La funcion real</p>
+          <h2>Menos "mandeme catalogo". Mas solicitudes serias.</h2>
+          <p>Rouse Home no necesita una tienda con precios. Necesita una pagina que filtre, eleve la percepcion de la marca y convierta cada publicacion en una conversacion de cotizacion personalizada.</p>
+          <div class="steps">
+            <div class="step"><b>01</b>La clienta se inspira con ambientes reales.</div>
+            <div class="step"><b>02</b>Elige que quiere adaptar: medida, color, tela o acabado.</div>
+            <div class="step"><b>03</b>La solicitud llega lista para responder por WhatsApp.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="piezas">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Piezas destacadas</h2>
+          <p class="section-copy">Cada ficha muestra estilo y posibilidades. El boton no dice comprar: invita a cotizar o adaptar el diseño.</p>
+        </div>
+        <div class="products">
+          <article class="product">
+            <div class="product-image"><img src="assets/consola.webp" alt="Consola baja de madera"></div>
+            <div class="product-body">
+              <span class="tagline">Sala | TV</span>
+              <h3>Consola ranurada</h3>
+              <p>Puede fabricarse en diferentes largos, tonos de madera y distribucion interna.</p>
+              <a class="btn ghost" href="#adaptar" data-design="Consola ranurada">Cotizar este diseño</a>
+            </div>
+          </article>
+          <article class="product">
+            <div class="product-image"><img src="assets/verde.webp" alt="Vitrina verde con puertas de vidrio"></div>
+            <div class="product-body">
+              <span class="tagline">Decoracion | Almacenaje</span>
+              <h3>Vitrina acento</h3>
+              <p>Ideal para comedor, sala o recibidor. Se adapta en color, altura y tipo de puerta.</p>
+              <a class="btn ghost" href="#adaptar" data-design="Vitrina acento">Cotizar este diseño</a>
+            </div>
+          </article>
+          <article class="product">
+            <div class="product-image"><img src="assets/gavetero.webp" alt="Gavetero de madera en dormitorio"></div>
+            <div class="product-body">
+              <span class="tagline">Dormitorio</span>
+              <h3>Gavetero natural</h3>
+              <p>Una pieza sobria para dormitorio, con opciones de tiradores y acabados premium.</p>
+              <a class="btn ghost" href="#adaptar" data-design="Gavetero natural">Cotizar este diseño</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="adaptar">
+      <div class="wrap customizer">
+        <aside class="preview">
+          <div class="preview-image"><img src="assets/comedor.webp" alt="Comedor personalizado" id="previewImage"></div>
+          <div class="preview-caption">
+            <strong id="previewTitle">Solicitud personalizada</strong>
+            <p id="previewText">Elegir opciones ayuda a enviar una consulta mas completa por WhatsApp.</p>
+          </div>
+        </aside>
+
+        <form class="form-panel" id="quoteForm">
+          <p class="eyebrow" style="color: var(--sage);">Adaptar diseño</p>
+          <h2 style="margin-bottom: 18px;">Personaliza tu pieza a tu gusto.</h2>
+
+          <div class="field">
+            <label for="piece">Tipo de pieza</label>
+            <select id="piece" name="piece">
+              <option>Comedor</option>
+              <option>Consola o mueble de TV</option>
+              <option>Vitrina o bar</option>
+              <option>Gavetero</option>
+              <option>Espejo</option>
+              <option>Mueble especial a medida</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Acabado preferido</label>
+            <div class="swatches">
+              <label class="swatch"><input type="radio" name="finish" value="Madera natural" checked><i style="background:#9a7453"></i><span>Madera natural</span></label>
+              <label class="swatch"><input type="radio" name="finish" value="Nogal oscuro"><i style="background:#4b3325"></i><span>Nogal oscuro</span></label>
+              <label class="swatch"><input type="radio" name="finish" value="Blanco calido"><i style="background:#eee9dd"></i><span>Blanco calido</span></label>
+              <label class="swatch"><input type="radio" name="finish" value="Verde acento"><i style="background:#6f7f66"></i><span>Verde acento</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="width">Medida aproximada</label>
+            <div class="range-row">
+              <input id="width" name="width" type="range" min="80" max="300" value="180">
+              <output id="widthOut">180 cm</output>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="space">Notas del espacio</label>
+            <textarea id="space" name="space" placeholder="Ejemplo: comedor para 6 personas, madera clara, casa en Escazu, quiero algo parecido a la foto."></textarea>
+          </div>
+
+          <div class="summary" id="summary">
+            <strong>Resumen:</strong> Comedor en madera natural, medida aproximada de 180 cm.
+          </div>
+
+          <div class="actions">
+            <a class="btn" id="whatsappBtn" href="#" target="_blank" rel="noreferrer">Enviar solicitud por WhatsApp</a>
+            <a class="btn ghost" href="https://www.instagram.com/rouse_home_/" target="_blank" rel="noreferrer">Ver Instagram</a>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section" id="contacto">
+      <div class="wrap quote-strip">
+        <div>
+          <h2 style="font-size: clamp(30px, 4vw, 48px); margin-bottom: 12px;">Una pagina para elevar la marca y ordenar la demanda.</h2>
+          <p>El cliente no ve precios fijos. Ve nivel, posibilidades y un camino claro para cotizar una pieza a medida.</p>
+        </div>
+        <a class="btn light" href="#adaptar">Empezar cotizacion</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <span>Rouse Home | Showroom digital conceptual</span>
+      <span>Muebles personalizados | Costa Rica</span>
+    </div>
+  </footer>
+
+  <script>
+    const WA_NUMBER = "50671900000";
+    const form = document.querySelector("#quoteForm");
+    const piece = document.querySelector("#piece");
+    const width = document.querySelector("#width");
+    const widthOut = document.querySelector("#widthOut");
+    const summary = document.querySelector("#summary");
+    const whatsappBtn = document.querySelector("#whatsappBtn");
+    const previewImage = document.querySelector("#previewImage");
+    const previewTitle = document.querySelector("#previewTitle");
+    const previewText = document.querySelector("#previewText");
+
+    const piecePreview = {
+      "Comedor": {
+        src: "assets/comedor.webp",
+        alt: "Comedor personalizado"
+      },
+      "Consola o mueble de TV": {
+        src: "assets/tv.webp",
+        alt: "Mueble de television personalizado"
+      },
+      "Vitrina o bar": {
+        src: "assets/vitrina.webp",
+        alt: "Vitrina o bar personalizado"
+      },
+      "Gavetero": {
+        src: "assets/gavetero.webp",
+        alt: "Gavetero personalizado"
+      },
+      "Espejo": {
+        src: "assets/espejo.webp",
+        alt: "Espejo personalizado"
+      },
+      "Mueble especial a medida": {
+        src: "assets/arco.webp",
+        alt: "Mueble especial a medida"
+      }
+    };
+
+    const updateSummary = () => {
+      const finish = form.querySelector("input[name='finish']:checked").value;
+      const value = `${width.value} cm`;
+      const preview = piecePreview[piece.value] || piecePreview["Comedor"];
+      widthOut.textContent = value;
+      previewImage.src = preview.src;
+      previewImage.alt = preview.alt;
+      summary.innerHTML = `<strong>Resumen:</strong> ${piece.value} en ${finish.toLowerCase()}, medida aproximada de ${value}.`;
+      previewTitle.textContent = piece.value;
+      previewText.textContent = `Solicitud inicial: ${finish}, ${value}. La cotizacion final depende de materiales, detalles y fabricacion.`;
+
+      const notes = document.querySelector("#space").value.trim();
+      const message = [
+        "Hola Rouse Home, quiero cotizar una pieza personalizada.",
+        `Tipo: ${piece.value}.`,
+        `Acabado: ${finish}.`,
+        `Medida aproximada: ${value}.`,
+        notes ? `Notas: ${notes}` : ""
+      ].filter(Boolean).join(" ");
+
+      whatsappBtn.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
+    };
+
+    form.addEventListener("input", updateSummary);
+    document.querySelectorAll("[data-design]").forEach((link) => {
+      link.addEventListener("click", () => {
+        const value = link.dataset.design;
+        if (value.includes("Consola")) piece.value = "Consola o mueble de TV";
+        if (value.includes("Vitrina")) piece.value = "Vitrina o bar";
+        if (value.includes("Gavetero")) piece.value = "Gavetero";
+        updateSummary();
+      });
+    });
+    updateSummary();
+  </script>
+</body>
+</html>
