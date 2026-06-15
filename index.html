@@ -378,6 +378,10 @@
       align-items: start;
     }
 
+    .customizer .form-panel {
+      align-self: stretch;
+    }
+
     .preview {
       position: sticky;
       top: 90px;
@@ -520,6 +524,78 @@
       color: var(--ink);
     }
 
+    .viewer3d {
+      width: min(1180px, 100%);
+      margin: clamp(28px, 5vw, 54px) auto 0;
+      display: grid;
+      grid-template-columns: minmax(0, .75fr) minmax(280px, 1.25fr);
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+
+    .viewer3d-copy,
+    .viewer3d-stage {
+      background: var(--white);
+    }
+
+    .viewer3d-copy {
+      padding: clamp(22px, 4vw, 36px);
+    }
+
+    .viewer3d-copy h2 {
+      margin-bottom: 14px;
+      font-size: clamp(30px, 4vw, 46px);
+    }
+
+    .viewer3d-copy p {
+      margin-bottom: 18px;
+      color: var(--muted);
+    }
+
+    .viewer3d-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .viewer3d-meta span {
+      display: block;
+      padding: 14px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .viewer3d-meta strong {
+      display: block;
+      color: var(--ink);
+      font-size: 20px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 400;
+    }
+
+    .viewer3d-stage {
+      position: relative;
+      min-height: 430px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, #f7f5ef, #e5ddcf);
+    }
+
+    #furniture3d {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 430px;
+      cursor: grab;
+    }
+
+    #furniture3d:active {
+      cursor: grabbing;
+    }
+
     .quote-strip {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -558,6 +634,7 @@
       .section-head,
       .quiet-band .wrap,
       .customizer,
+      .viewer3d,
       .quote-strip {
         grid-template-columns: 1fr;
       }
@@ -776,6 +853,20 @@
           </div>
         </form>
       </div>
+      <div class="viewer3d" aria-label="Vista 3D conceptual">
+        <div class="viewer3d-copy">
+          <p class="eyebrow" style="color: var(--sage);">Vista 3D conceptual</p>
+          <h2>Una idea mas clara antes de cotizar.</h2>
+          <p>El modelo 3D acompaña la seleccion de pieza y acabado para visualizar volumen, tono y proporciones generales.</p>
+          <div class="viewer3d-meta">
+            <span><strong id="modelPiece">Comedor</strong>Tipo de pieza</span>
+            <span><strong id="modelFinish">Madera natural</strong>Acabado</span>
+          </div>
+        </div>
+        <div class="viewer3d-stage">
+          <canvas id="furniture3d" aria-label="Modelo 3D basico del mueble seleccionado"></canvas>
+        </div>
+      </div>
     </section>
 
     <section class="section" id="contacto">
@@ -941,6 +1032,218 @@
       });
     });
     updateSummary();
+  </script>
+  <script type="module">
+    import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+
+    const canvas = document.querySelector("#furniture3d");
+    const modelPiece = document.querySelector("#modelPiece");
+    const modelFinish = document.querySelector("#modelFinish");
+    const form3d = document.querySelector("#quoteForm");
+    const piece3d = document.querySelector("#piece");
+
+    const finishColors = {
+      "Madera natural": 0x9a7453,
+      "Nogal oscuro": 0x3a251a,
+      "Blanco calido": 0xece4d7,
+      "Verde acento": 0x58694e
+    };
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf3eee4);
+
+    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    camera.position.set(4.2, 3.2, 6.2);
+    camera.lookAt(0, .8, 0);
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+
+    const root = new THREE.Group();
+    scene.add(root);
+
+    const ambient = new THREE.HemisphereLight(0xffffff, 0x8b806f, 2.2);
+    scene.add(ambient);
+
+    const key = new THREE.DirectionalLight(0xffffff, 2.6);
+    key.position.set(4, 6, 5);
+    key.castShadow = true;
+    scene.add(key);
+
+    const floor = new THREE.Mesh(
+      new THREE.CircleGeometry(3.9, 72),
+      new THREE.MeshStandardMaterial({ color: 0xd9cfbf, roughness: .86 })
+    );
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    const makeMat = (color, roughness = .62) => new THREE.MeshStandardMaterial({
+      color,
+      roughness,
+      metalness: .04
+    });
+
+    const darkMetal = makeMat(0x1f211d, .44);
+    const glass = new THREE.MeshPhysicalMaterial({
+      color: 0xf7fbff,
+      roughness: .08,
+      metalness: 0,
+      transmission: .35,
+      transparent: true,
+      opacity: .42
+    });
+
+    const addBox = (group, size, pos, mat) => {
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(size[0], size[1], size[2]), mat);
+      mesh.position.set(pos[0], pos[1], pos[2]);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      group.add(mesh);
+      return mesh;
+    };
+
+    const addCylinder = (group, radius, depth, pos, mat, radial = 48) => {
+      const mesh = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, depth, radial), mat);
+      mesh.position.set(pos[0], pos[1], pos[2]);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      group.add(mesh);
+      return mesh;
+    };
+
+    const buildDining = (mat) => {
+      const g = new THREE.Group();
+      addBox(g, [3.2, .18, 1.65], [0, 1.1, 0], mat);
+      addBox(g, [.18, 1.1, .18], [-1.35, .55, -.65], mat);
+      addBox(g, [.18, 1.1, .18], [1.35, .55, -.65], mat);
+      addBox(g, [.18, 1.1, .18], [-1.35, .55, .65], mat);
+      addBox(g, [.18, 1.1, .18], [1.35, .55, .65], mat);
+
+      const chairPositions = [[-1.05, 0, -1.45], [1.05, 0, -1.45], [-1.05, 0, 1.45], [1.05, 0, 1.45]];
+      chairPositions.forEach(([x, y, z]) => {
+        const chair = new THREE.Group();
+        addBox(chair, [.72, .12, .58], [0, .62, 0], mat);
+        addBox(chair, [.72, .9, .12], [0, 1.1, z > 0 ? .34 : -.34], mat);
+        addBox(chair, [.08, .62, .08], [-.28, .31, -.2], darkMetal);
+        addBox(chair, [.08, .62, .08], [.28, .31, -.2], darkMetal);
+        addBox(chair, [.08, .62, .08], [-.28, .31, .2], darkMetal);
+        addBox(chair, [.08, .62, .08], [.28, .31, .2], darkMetal);
+        chair.position.set(x, y, z);
+        g.add(chair);
+      });
+      return g;
+    };
+
+    const buildConsole = (mat) => {
+      const g = new THREE.Group();
+      addBox(g, [3.25, .78, .72], [0, .72, 0], mat);
+      addBox(g, [3.05, .08, .82], [0, 1.16, 0], mat);
+      [-.95, 0, .95].forEach(x => addBox(g, [.05, .65, .76], [x, .72, .03], darkMetal));
+      [-1.48, 1.48].forEach(x => addBox(g, [.12, .38, .12], [x, .2, -.23], darkMetal));
+      [-1.48, 1.48].forEach(x => addBox(g, [.12, .38, .12], [x, .2, .23], darkMetal));
+      return g;
+    };
+
+    const buildCabinet = (mat) => {
+      const g = new THREE.Group();
+      addBox(g, [2.7, 1.85, .62], [0, 1.08, 0], mat);
+      addBox(g, [2.45, 1.32, .04], [0, 1.24, .34], glass);
+      [-.45, .45].forEach(x => addBox(g, [.04, 1.36, .08], [x, 1.24, .39], darkMetal));
+      addBox(g, [2.3, .08, .68], [0, .56, .04], darkMetal);
+      addBox(g, [2.3, .08, .68], [0, 1.22, .04], darkMetal);
+      return g;
+    };
+
+    const buildDresser = (mat) => {
+      const g = new THREE.Group();
+      addBox(g, [2.6, 1.25, .86], [0, .82, 0], mat);
+      [-.42, 0, .42].forEach((y) => addBox(g, [2.38, .035, .06], [0, .82 + y, .46], darkMetal));
+      [-.8, 0, .8].forEach((x) => addBox(g, [.12, .05, .08], [x, .95, .51], darkMetal));
+      [-.8, 0, .8].forEach((x) => addBox(g, [.12, .05, .08], [x, .56, .51], darkMetal));
+      return g;
+    };
+
+    const buildMirror = (mat) => {
+      const g = new THREE.Group();
+      const frame = addCylinder(g, .86, .1, [0, 1.52, 0], mat, 72);
+      frame.scale.y = 1.55;
+      frame.rotation.x = Math.PI / 2;
+      const mirror = addCylinder(g, .68, .105, [0, 1.52, .02], glass, 72);
+      mirror.scale.y = 1.36;
+      mirror.rotation.x = Math.PI / 2;
+      addBox(g, [.22, 2.2, .16], [0, 1.18, -.08], mat);
+      return g;
+    };
+
+    const buildSpecial = (mat) => {
+      const g = new THREE.Group();
+      addBox(g, [1.9, 1.95, .72], [0, 1.12, 0], mat);
+      const arch = addCylinder(g, .95, .74, [0, 2.06, 0], mat, 64);
+      arch.scale.y = .55;
+      arch.rotation.z = Math.PI / 2;
+      addBox(g, [1.55, 1.35, .04], [0, 1.18, .39], glass);
+      addBox(g, [1.68, .08, .78], [0, .82, .03], darkMetal);
+      addBox(g, [1.68, .08, .78], [0, 1.36, .03], darkMetal);
+      return g;
+    };
+
+    const builders = {
+      "Comedor": buildDining,
+      "Consola o mueble de TV": buildConsole,
+      "Vitrina o bar": buildCabinet,
+      "Gavetero": buildDresser,
+      "Espejo": buildMirror,
+      "Mueble especial a medida": buildSpecial
+    };
+
+    const rebuildModel = () => {
+      root.clear();
+      const finish = form3d.querySelector("input[name='finish']:checked").value;
+      const color = finishColors[finish] || finishColors["Madera natural"];
+      const mat = makeMat(color);
+      const builder = builders[piece3d.value] || buildDining;
+      const model = builder(mat);
+      root.add(model);
+      modelPiece.textContent = piece3d.value;
+      modelFinish.textContent = finish;
+    };
+
+    const resize3d = () => {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      renderer.setSize(rect.width, rect.height, false);
+      camera.aspect = rect.width / rect.height;
+      camera.updateProjectionMatrix();
+    };
+
+    let dragging = false;
+    let lastX = 0;
+    canvas.addEventListener("pointerdown", (event) => {
+      dragging = true;
+      lastX = event.clientX;
+      canvas.setPointerCapture(event.pointerId);
+    });
+    canvas.addEventListener("pointermove", (event) => {
+      if (!dragging) return;
+      root.rotation.y += (event.clientX - lastX) * .01;
+      lastX = event.clientX;
+    });
+    canvas.addEventListener("pointerup", () => {
+      dragging = false;
+    });
+
+    form3d.addEventListener("input", rebuildModel);
+    window.addEventListener("resize", resize3d);
+    resize3d();
+    rebuildModel();
+
+    const animate = () => {
+      root.rotation.y += dragging ? 0 : .0025;
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    };
+    animate();
   </script>
 </body>
 </html>
