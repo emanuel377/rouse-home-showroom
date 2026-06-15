@@ -395,23 +395,6 @@
       aspect-ratio: 4 / 5;
     }
 
-    .finish-overlay {
-      content: "";
-      position: absolute;
-      left: var(--overlay-left, 14%);
-      top: var(--overlay-top, 43%);
-      width: var(--overlay-width, 72%);
-      height: var(--overlay-height, 28%);
-      background:
-        linear-gradient(135deg, rgba(255,255,255,.16), rgba(0,0,0,.08)),
-        var(--finish-color, rgba(154, 116, 83, .72));
-      clip-path: var(--overlay-shape, polygon(0 18%, 100% 0, 95% 100%, 8% 92%));
-      mix-blend-mode: multiply;
-      opacity: var(--overlay-opacity, .86);
-      pointer-events: none;
-      transition: background .25s ease, opacity .25s ease, left .25s ease, top .25s ease, width .25s ease, height .25s ease;
-    }
-
     .preview-image img {
       transition: filter .25s ease, transform .25s ease;
       filter: saturate(1.02) contrast(1.02);
@@ -822,9 +805,8 @@
     <section class="section alt" id="adaptar">
       <div class="wrap customizer">
         <aside class="preview">
-          <div class="preview-image" id="previewFrame">
+          <div class="preview-image">
             <img src="assets/comedor.webp" alt="Comedor personalizado" id="previewImage">
-            <span class="finish-overlay" aria-hidden="true"></span>
           </div>
           <div class="preview-caption">
             <strong id="previewTitle">Solicitud personalizada</strong>
@@ -924,98 +906,34 @@
     const widthOut = document.querySelector("#widthOut");
     const summary = document.querySelector("#summary");
     const whatsappBtn = document.querySelector("#whatsappBtn");
-    const previewFrame = document.querySelector("#previewFrame");
     const previewImage = document.querySelector("#previewImage");
     const previewTitle = document.querySelector("#previewTitle");
     const previewText = document.querySelector("#previewText");
 
-    const finishPreview = {
-      "Madera natural": {
-        color: "rgba(181, 124, 72, .9)"
-      },
-      "Nogal oscuro": {
-        color: "rgba(47, 25, 13, .95)"
-      },
-      "Blanco calido": {
-        color: "rgba(245, 236, 216, .92)"
-      },
-      "Verde acento": {
-        color: "rgba(74, 112, 68, .92)"
-      }
-    };
-
     const piecePreview = {
       "Comedor": {
         src: "assets/comedor.webp",
-        alt: "Comedor personalizado",
-        overlay: {
-          left: "10%",
-          top: "48%",
-          width: "80%",
-          height: "32%",
-          shape: "polygon(7% 18%, 92% 0, 100% 38%, 82% 100%, 14% 94%, 0 42%)",
-          opacity: ".88"
-        }
+        alt: "Comedor personalizado"
       },
       "Consola o mueble de TV": {
         src: "assets/tv.webp",
-        alt: "Mueble de television personalizado",
-        overlay: {
-          left: "15%",
-          top: "55%",
-          width: "70%",
-          height: "20%",
-          shape: "polygon(0 8%, 100% 0, 96% 100%, 3% 96%)",
-          opacity: ".9"
-        }
+        alt: "Mueble de television personalizado"
       },
       "Vitrina o bar": {
         src: "assets/vitrina.webp",
-        alt: "Vitrina o bar personalizado",
-        overlay: {
-          left: "11%",
-          top: "28%",
-          width: "78%",
-          height: "48%",
-          shape: "polygon(3% 8%, 97% 0, 100% 92%, 8% 100%, 0 22%)",
-          opacity: ".84"
-        }
+        alt: "Vitrina o bar personalizado"
       },
       "Gavetero": {
         src: "assets/gavetero.webp",
-        alt: "Gavetero personalizado",
-        overlay: {
-          left: "15%",
-          top: "43%",
-          width: "70%",
-          height: "35%",
-          shape: "polygon(8% 0, 100% 8%, 92% 100%, 0 92%)",
-          opacity: ".9"
-        }
+        alt: "Gavetero personalizado"
       },
       "Espejo": {
         src: "assets/espejo.webp",
-        alt: "Espejo personalizado",
-        overlay: {
-          left: "37%",
-          top: "13%",
-          width: "28%",
-          height: "66%",
-          shape: "ellipse(44% 50% at 50% 50%)",
-          opacity: ".78"
-        }
+        alt: "Espejo personalizado"
       },
       "Mueble especial a medida": {
         src: "assets/arco.webp",
-        alt: "Mueble especial a medida",
-        overlay: {
-          left: "28%",
-          top: "16%",
-          width: "44%",
-          height: "68%",
-          shape: "polygon(14% 20%, 50% 0, 86% 20%, 100% 100%, 0 100%)",
-          opacity: ".84"
-        }
+        alt: "Mueble especial a medida"
       }
     };
 
@@ -1023,20 +941,12 @@
       const finish = form.querySelector("input[name='finish']:checked").value;
       const value = `${width.value} cm`;
       const preview = piecePreview[piece.value] || piecePreview["Comedor"];
-      const finishStyle = finishPreview[finish] || finishPreview["Madera natural"];
       widthOut.textContent = value;
       previewImage.src = preview.src;
       previewImage.alt = preview.alt;
-      previewFrame.style.setProperty("--finish-color", finishStyle.color);
-      previewFrame.style.setProperty("--overlay-left", preview.overlay.left);
-      previewFrame.style.setProperty("--overlay-top", preview.overlay.top);
-      previewFrame.style.setProperty("--overlay-width", preview.overlay.width);
-      previewFrame.style.setProperty("--overlay-height", preview.overlay.height);
-      previewFrame.style.setProperty("--overlay-shape", preview.overlay.shape);
-      previewFrame.style.setProperty("--overlay-opacity", preview.overlay.opacity);
       summary.innerHTML = `<strong>Resumen:</strong> ${piece.value} en ${finish.toLowerCase()}, medida aproximada de ${value}.`;
       previewTitle.textContent = piece.value;
-      previewText.textContent = `Vista referencial en ${finish.toLowerCase()}, ${value}. La cotizacion final depende de materiales, detalles y fabricacion.`;
+      previewText.textContent = `Imagen referencial de la pieza seleccionada. El acabado se visualiza en la vista 3D conceptual.`;
 
       const notes = document.querySelector("#space").value.trim();
       const message = [
